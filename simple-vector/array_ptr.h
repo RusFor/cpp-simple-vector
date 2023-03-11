@@ -30,6 +30,10 @@ public:
     // Запрещаем копирование
     ArrayPtr(const ArrayPtr&) = delete;
 
+    ArrayPtr(ArrayPtr<Type>&& other) noexcept {
+        raw_ptr_ = exchange(other, nullptr);
+    }
+
     ~ArrayPtr() {
         if (raw_ptr_ != nullptr) {
             delete[] raw_ptr_;
@@ -39,6 +43,12 @@ public:
 
     // Запрещаем присваивание
     ArrayPtr& operator=(const ArrayPtr&) = delete;
+
+    ArrayPtr& operator=(ArrayPtr<Type>&& other) noexcept {
+        if (this != &other)
+            swap(other);
+        return *this;
+    }
 
     // Прекращает владением массивом в памяти, возвращает значение адреса массива
     // После вызова метода указатель на массив должен обнулиться
